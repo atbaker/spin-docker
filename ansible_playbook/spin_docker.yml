@@ -1,0 +1,19 @@
+---
+# Deploys spin-docker to an Ubuntu server
+
+- name: Install and configure spin-docker
+  hosts: all
+  sudo: True
+
+  vars:
+    host: $inventory_hostname
+
+    # Spin-docker configuration settings
+    sd_environment: 'development'
+    sd_password: 'spindocker'
+    sd_disable_timeouts: False
+    sd_initial_timeout_interval: 7200
+    sd_timeout_interval: 1800
+
+  roles:
+    - spin_docker

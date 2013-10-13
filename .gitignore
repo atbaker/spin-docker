@@ -1,0 +1,47 @@
+# ATB-specific
+.env*
+.DS_Store
+_build
+
+.vagrant
+
+*.py[cod]
+
+# Spin-docker
+newrelic.ini
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+htmlcov
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject

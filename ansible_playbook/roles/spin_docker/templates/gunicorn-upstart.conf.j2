@@ -1,0 +1,24 @@
+description "Gunicorn server for {{ host }}"
+
+{% if vagrant_box %}
+start on runlevel [2345] and vagrant-mounted
+{% else %}
+start on runlevel [2345]
+{% endif %}
+stop on runlevel [06]
+
+respawn
+
+# Apply spin-docker settings
+env ENVIRONMENT='{{ sd_environment | default(development) }}'
+env SPIN_DOCKER_PASSWORD='{{ sd_password | default(spindocker) }}'
+{% if sd_disable_timeouts %}
+env DISABLE_TIMEOUTS='True'
+{% endif %}
+env INITIAL_TIMEOUT_INTERVAL='{{ sd_initial_timeout_interval | default(7200) }}'
+env TIMEOUT_INTERVAL='{{ sd_timeout_interval | default(1800) }}'
+
+chdir /var/www/spin-docker
+exec /var/www/venv/bin/gunicorn spindocker:app \
+    --access-logfile /var/log/gunicorn/access.log \
+    --error-logfile /var/log/gunicorn/error.log

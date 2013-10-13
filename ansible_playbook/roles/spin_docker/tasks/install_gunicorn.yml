@@ -1,0 +1,16 @@
+---
+# Configure gunicorn 
+
+- name: Create gunicorn log directory
+  file: path=/var/log/gunicorn state=directory
+
+- name: Create gunicorn log files
+  file: path={{ item }} state=touch
+  with_items:
+    - /var/log/gunicorn/access.log
+    - /var/log/gunicorn/error.log
+
+- name: Write gunicorn init script
+  template: src=./gunicorn-upstart.conf.j2 dest=/etc/init/gunicorn.conf
+  notify:
+      - Restart gunicorn

@@ -1,0 +1,10 @@
+---
+# Install Celery
+
+- name: Install RabbitMQ
+  apt: pkg=rabbitmq-server=2.7.1-0ubuntu4 state=present 
+
+- name: Install Celery worker init script
+  template: src=celery.conf.j2 dest=/etc/init/celery.conf
+  notify:
+    - Restart celery

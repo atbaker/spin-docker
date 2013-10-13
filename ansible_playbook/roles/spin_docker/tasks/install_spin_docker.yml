@@ -1,0 +1,31 @@
+---
+# Install spin-docker
+
+# Synchronize source code when not deploying to vagrant
+- name: Sync source code
+  when: not vagrant_box
+  synchronize: src=/Users/atbaker/devel/repos/atbaker/spin-docker dest=/var/www delete=yes
+
+- name: Install spin-docker dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+   - python-pip=1.0-1build1
+   - redis-server=2:2.2.12-1build1
+
+- name: Set redis to appendonly mode
+  lineinfile:
+    dest=/etc/redis/redis.conf
+    regexp='^appendonly'
+    line='appendonly yes'
+  notify:
+    - Restart redis
+
+- name: Install virtualenv
+  pip: name=virtualenv state=present
+
+- name: Install requirements
+  pip: requirements=/var/www/spin-docker/requirements/production.txt virtualenv=/var/www/venv
+
+# Environment variables for local development are stored in a .env file
+- name: Create .env file from spin_docker configuration
+  template: src=.env.j2 dest=/var/www/spin-docker/.env

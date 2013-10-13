@@ -1,0 +1,9 @@
+---
+# Pull spin-docker example images from docker index
+
+- name: Pull spin-docker images
+  command: docker pull {{ item }}
+  with_items:
+   - atbaker/sd-postgres
+   - atbaker/sd-mongo
+   - atbaker/sd-django

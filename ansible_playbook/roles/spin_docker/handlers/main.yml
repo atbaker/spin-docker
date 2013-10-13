@@ -1,0 +1,17 @@
+---
+# Handlers
+- name: Restart redis
+  service: name=redis-server
+           state=restarted
+
+- name: Restart nginx
+  service: name=nginx
+           state=restarted
+
+- name: Restart gunicorn
+  service: name=gunicorn
+           state=restarted
+
+- name: Restart celery
+  service: name=celery
+           state=restarted

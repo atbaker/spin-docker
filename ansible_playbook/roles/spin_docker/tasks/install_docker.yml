@@ -1,0 +1,35 @@
+---
+# Install Docker
+
+- name: Upgrade Linux kernel
+  when: not vagrant_box
+  register: result
+  apt: pkg={{ item }} state=present
+  with_items:
+    - linux-image-generic-lts-raring
+    - linux-headers-generic-lts-raring
+
+# For normal servers, reboot and watch the SSH port
+- name: Reboot if kernel was upgraded
+  when: result|changed and not vagrant_box
+  command: reboot
+
+- name: Wait for the server to come back up
+  when: result|changed and not vagrant_box
+  sudo: false
+  local_action: wait_for delay=10 host={{ hostvars[host]['ansible_ssh_host'] }} port=22
+
+- name: Add apt_repository dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+    - python-apt
+    - python-pycurl
+
+- name: Add docker.io key
+  apt_key: url=https://get.docker.io/gpg state=present
+
+- name: Add docker repository
+  apt_repository: repo='deb http://get.docker.io/ubuntu docker main' state=present
+
+- name: Install docker
+  apt: update_cache=yes pkg=lxc-docker-0.8.1

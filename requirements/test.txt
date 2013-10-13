@@ -1,0 +1,5 @@
+-r base.txt
+
+coverage==3.7
+mock==1.0.1
+Sphinx==1.2.1

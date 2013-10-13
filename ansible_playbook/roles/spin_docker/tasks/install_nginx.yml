@@ -1,0 +1,27 @@
+---
+# Configure nginx
+
+- name: Install nginx
+  apt: pkg=nginx=1.1.19-1ubuntu0.6 state=present
+
+- name: Allow long hostnames in nginx
+  lineinfile:
+    dest=/etc/nginx/nginx.conf
+    regexp='(\s+)#? ?server_names_hash_bucket_size'
+    backrefs=yes
+    line='\1server_names_hash_bucket_size 64;'
+
+- name: Add nginx config to sites-available
+  template: src=./nginx.conf.j2 dest=/etc/nginx/sites-available/spin_docker
+  notify:
+      - Restart nginx
+
+- name: Add symlink in nginx sites-enabled
+  file: src=/etc/nginx/sites-available/spin_docker dest=/etc/nginx/sites-enabled/spin_docker state=link
+  notify:
+      - Restart nginx
+
+- name: Remove default nginx site
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify:
+      - Restart nginx

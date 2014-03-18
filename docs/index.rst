@@ -6,7 +6,7 @@ Spin-docker: A lightweight RESTful docker PaaS
 
 **Spin-docker** is a lightweight platform-as-a-service that runs on a RESTful API. Designed with simplicity in mind, spin-docker provides enough features to help you stand up your own `Docker <https://www.docker.io/>`_-powered PaaS in minutes.
 
-Spin-docker was created by `Andrew T. Baker <http://www.andrewtorkbaker.com/>`_ as a side project this winter. It might not be the best Docker-based PaaS out there, but building it was a great learning experience. Check out my blog post about it: FIX BLOG HERE
+Spin-docker was created by `Andrew T. Baker <http://www.andrewtorkbaker.com/>`_ as a side project this winter. It might not be the best Docker-based PaaS out there, but building it was a great learning experience. Check out my blog post about it: http://andrewtorkbaker.com/what-makes-a-good-side-project
 
 Spin-docker is open source under the `MIT license <https://github.com/atbaker/spin-docker/blob/master/LICENSE>`_.
 

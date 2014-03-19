@@ -16,12 +16,10 @@ TIMEOUT_INTERVAL = int(os.environ['TIMEOUT_INTERVAL'])
 def get_container_ports(port_info):
     spin_docker_ports = {'ssh_port': '', 'app_port': ''}
 
-    for port in port_info.keys():
-        if port_info[port] is not None:
-            if port == '22/tcp':
-                spin_docker_ports['ssh_port'] = port_info[port][0]['HostPort']
-            else:
-                spin_docker_ports['app_port'] = port_info[port][0]['HostPort']
+    for port, value in port_info.iteritems():
+        if value is not None:
+            key = 'ssh_port' if port == '22/tcp' else 'app_port'
+            spin_docker_ports[key] = value[0]['HostPort']
 
     return spin_docker_ports
 
@@ -36,9 +34,7 @@ def audit_containers():
     for ip_address in r.keys('ips:*'):
         r.delete(ip_address)
 
-    containers = []
-    for container in r.keys('containers:*'):
-        containers.append(r.hgetall(container))
+    containers = [r.hgetall(container) for container in r.keys('containers:*')]
 
     for container in containers:
         container_id = container['container_id']
@@ -75,8 +71,7 @@ def start_container(container_id):
 
     # Get new container's ports
     ports = get_container_ports(container_details['NetworkSettings']['Ports'])
-    container['ssh_port'] = ports['ssh_port']
-    container['app_port'] = ports['app_port']
+    container.update(ports)
 
     r.hmset('containers:%s' % container_id, container)
 
@@ -135,22 +130,18 @@ def check_container_activity(container_id, final=False):
     activity, it stops the container.
     """
     container = r.hgetall('containers:%s' % container_id)
-    if container == {}:
-        return
-    elif container['status'] != RUNNING:
-        return
+    if container and container['status'] == RUNNING:
+        inactive = container['active'] == '0'
 
-    inactive = container['active'] == '0'
-
-    if inactive:
-        if final:
-            stop_container.delay(container_id)
-            return 'stopping container'
+        if inactive:
+            if final:
+                stop_container.delay(container_id)
+                return 'stopping container'
+            else:
+                check_container_activity.apply_async(
+                    args=(container_id,), kwargs={'final': True, }, countdown=TIMEOUT_INTERVAL)
+                return 'container inactive'
         else:
             check_container_activity.apply_async(
-                args=(container_id,), kwargs={'final': True, }, countdown=TIMEOUT_INTERVAL)
-            return 'container inactive'
-    else:
-        check_container_activity.apply_async(
-            args=(container_id,), countdown=TIMEOUT_INTERVAL)
-        return 'container active'
+                args=(container_id,), countdown=TIMEOUT_INTERVAL)
+            return 'container active'

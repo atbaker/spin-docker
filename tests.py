@@ -1,10 +1,10 @@
 import base64
-from docker import Client
 import os
 import unittest
-import redis
 import time
 
+import redis
+from docker import Client
 from flask import json
 from mock import Mock
 

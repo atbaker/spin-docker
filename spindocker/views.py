@@ -22,9 +22,7 @@ def startup_audit():
 @auth.get_password
 def get_pw(username):
     """Returns the password specified in 'SPIN_DOCKER_PASSWORD'."""
-    if username in users:
-        return users[username]
-    return None
+    return users.get(username)
 
 container_fields = {
     'container_id': fields.String,
@@ -53,13 +51,8 @@ class ImageList(Resource):
 
     def get(self):
         """Gets a list of all tagged images for the /images endpoint."""
-        images = []
-
-        for image in client.images():
-            if image['RepoTags'] != [u'<none>:<none>']:
-                images += image['RepoTags']
-
-        return images
+        repo_tag_iter = (image['RepoTags'] for image in client.images())
+        return [repotag for repotag in repo_tag_iter if repotag != [u'<none>:<none>']]
 
 
 class ContainerList(Resource):
@@ -77,10 +70,7 @@ class ContainerList(Resource):
         if args['audit']:
             audit_containers()
 
-        containers = []
-        for container in r.keys('containers:*'):
-            containers.append(r.hgetall(container))
-
+        containers = [r.hgetall(container) for container in r.keys('containers:*')]
         return [marshal(c, container_fields) for c in containers]
 
     def post(self):

@@ -1,3 +1,6 @@
+from itertools import chain
+import os
+
 from docker import APIError
 from flask import request
 from flask.ext.httpauth import HTTPBasicAuth
@@ -6,8 +9,6 @@ from spindocker.tasks import audit_containers, start_container, stop_container, 
 from spindocker.utils import r, client, RUNNING, STOPPED, STOPPING
 
 from spindocker import app, api
-
-import os
 
 auth = HTTPBasicAuth()
 
@@ -52,7 +53,8 @@ class ImageList(Resource):
     def get(self):
         """Gets a list of all tagged images for the /images endpoint."""
         repo_tag_iter = (image['RepoTags'] for image in client.images())
-        return [repotag for repotag in repo_tag_iter if repotag != [u'<none>:<none>']]
+        return [repotag for repotag in chain.from_iterable(repo_tag_iter) \
+            if repotag != u'<none>:<none>']
 
 
 class ContainerList(Resource):

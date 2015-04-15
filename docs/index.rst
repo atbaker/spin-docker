@@ -2,7 +2,11 @@
    sphinx-quickstart on Mon Feb 24 02:54:32 2014.
 
 Spin-docker: A lightweight RESTful docker PaaS
-================================================
+==============================================
+
+.. warning::
+
+    **Spin-docker is no longer under active development.** If you need a Docker PaaS, I recommend looking at the `dokku <https://github.com/progrium/dokku>`_, `Deis <http://deis.io/>`_, or `Flynn <https://flynn.io/>`_ projects.
 
 **Spin-docker** is a lightweight platform-as-a-service that runs on a RESTful API. Designed with simplicity in mind, spin-docker provides enough features to help you stand up your own `Docker <https://www.docker.io/>`_-powered PaaS in minutes.
 
